@@ -955,12 +955,8 @@ describe('cmdInitMapCodebase', () => {
     const workflow = fs.readFileSync(
       path.join(__dirname, '..', 'get-shit-done', 'workflows', 'map-codebase.md'), 'utf8'
     );
-    // OpenCode must NOT appear in the "WITHOUT Task tool" / "NOT available" condition
-    const withoutLine = workflow.split('\n').find(l =>
-      l.includes('NOT available') || l.includes('WITHOUT Task tool')
-    );
-    assert.ok(withoutLine, 'workflow should have a line about Task tool NOT being available');
-    assert.ok(!withoutLine.includes('OpenCode'), 'OpenCode must NOT be listed under runtimes WITHOUT Task tool');
+    // Copilot-only: sequential_mapping fallback removed; no runtime conditions should list OpenCode
+    assert.ok(!workflow.includes('OpenCode'), 'OpenCode must not appear in map-codebase workflow');
   });
 });
 

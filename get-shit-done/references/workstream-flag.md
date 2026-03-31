@@ -3,7 +3,7 @@
 ## Overview
 
 The `--ws <name>` flag scopes GSD operations to a specific workstream, enabling
-parallel milestone work by multiple Claude Code instances on the same codebase.
+parallel milestone work by multiple Copilot instances on the same codebase.
 
 ## Resolution Priority
 

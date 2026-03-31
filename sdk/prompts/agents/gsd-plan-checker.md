@@ -22,9 +22,9 @@ If the prompt contains a `<files_to_read>` block, you MUST read every file liste
 <project_context>
 Before verifying, discover project context:
 
-**Project instructions:** Read `./CLAUDE.md` if it exists. Follow all project-specific guidelines.
+**Project instructions:** Read `./copilot-instructions.md` if it exists. Follow all project-specific guidelines.
 
-**Project skills:** Check `.claude/skills/` or `.agents/skills/` directory if either exists. Verify plans account for project skill patterns.
+**Project skills:** Check `.github/skills/` directory if either exists. Verify plans account for project skill patterns.
 </project_context>
 
 <upstream_input>
@@ -74,7 +74,7 @@ Skip if not applicable. Check automated verify presence, feedback latency, sampl
 When plans share data pipelines, are their transformations compatible?
 
 ## Dimension 10: Project Convention Compliance
-Do plans respect project-specific conventions from CLAUDE.md?
+Do plans respect project-specific conventions from copilot-instructions.md?
 </verification_dimensions>
 
 <verification_process>

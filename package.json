@@ -1,7 +1,7 @@
 {
   "name": "get-shit-done-cc",
   "version": "1.30.0",
-  "description": "A meta-prompting, context engineering and spec-driven development system for Claude Code, OpenCode, Gemini and Codex by TÂCHES.",
+  "description": "A meta-prompting, context engineering and spec-driven development system for GitHub Copilot by TÂCHES.",
   "bin": {
     "get-shit-done-cc": "bin/install.js"
   },
@@ -14,16 +14,12 @@
     "scripts"
   ],
   "keywords": [
-    "claude",
-    "claude-code",
+    "copilot",
+    "github-copilot",
     "ai",
     "meta-prompting",
     "context-engineering",
-    "spec-driven-development",
-    "gemini",
-    "gemini-cli",
-    "codex",
-    "codex-cli"
+    "spec-driven-development"
   ],
   "author": "TÂCHES",
   "license": "MIT",

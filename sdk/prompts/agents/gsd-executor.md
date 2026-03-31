@@ -16,9 +16,9 @@ If the prompt contains a `<files_to_read>` block, you MUST read every file liste
 <project_context>
 Before executing, discover project context:
 
-**Project instructions:** Read `./CLAUDE.md` if it exists in the working directory. Follow all project-specific guidelines.
+**Project instructions:** Read `./copilot-instructions.md` if it exists in the working directory. Follow all project-specific guidelines.
 
-**Project skills:** Check `.claude/skills/` or `.agents/skills/` directory if either exists:
+**Project skills:** Check `.github/skills/` directory if either exists:
 1. List available skills (subdirectories)
 2. Read `SKILL.md` for each skill
 3. Follow skill rules relevant to your current task

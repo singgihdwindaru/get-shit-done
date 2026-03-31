@@ -14,24 +14,13 @@ After a GSD update wipes and reinstalls files, this command merges user's previo
 Check for local patches directory:
 
 ```bash
-# Global install — detect runtime config directory
-if [ -d "$HOME/.config/opencode/gsd-local-patches" ]; then
-  PATCHES_DIR="$HOME/.config/opencode/gsd-local-patches"
-elif [ -d "$HOME/.opencode/gsd-local-patches" ]; then
-  PATCHES_DIR="$HOME/.opencode/gsd-local-patches"
-elif [ -d "$HOME/.gemini/gsd-local-patches" ]; then
-  PATCHES_DIR="$HOME/.gemini/gsd-local-patches"
-else
-  PATCHES_DIR="$HOME/.claude/gsd-local-patches"
-fi
-# Local install fallback — check all runtime directories
+# Global install — Copilot config directory
+PATCHES_DIR="$HOME/.copilot/gsd-local-patches"
+# Local install fallback
 if [ ! -d "$PATCHES_DIR" ]; then
-  for dir in .config/opencode .opencode .gemini .claude; do
-    if [ -d "./$dir/gsd-local-patches" ]; then
-      PATCHES_DIR="./$dir/gsd-local-patches"
-      break
-    fi
-  done
+  if [ -d "./.github/gsd-local-patches" ]; then
+    PATCHES_DIR="./.github/gsd-local-patches"
+  fi
 fi
 ```
 
@@ -41,7 +30,7 @@ Read `backup-meta.json` from the patches directory.
 ```
 No local patches found. Nothing to reapply.
 
-Local patches are automatically saved when you run /gsd:update
+Local patches are automatically saved when you run /gsd-update
 after modifying any GSD workflow, command, or agent files.
 ```
 Exit.
@@ -89,7 +78,7 @@ For each file in `backup-meta.json`:
 After reapplying, regenerate the file manifest so future updates correctly detect these as user modifications:
 
 ```bash
-# The manifest will be regenerated on next /gsd:update
+# The manifest will be regenerated on next /gsd-update
 # For now, just note which files were modified
 ```
 

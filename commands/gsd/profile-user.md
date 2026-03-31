@@ -13,14 +13,14 @@ allowed-tools:
 ---
 
 <objective>
-Generate a developer behavioral profile from session analysis (or questionnaire) and produce artifacts (USER-PROFILE.md, /gsd:dev-preferences, CLAUDE.md section) that personalize Claude's responses.
+Generate a developer behavioral profile from session analysis (or questionnaire) and produce artifacts (USER-PROFILE.md, /gsd-dev-preferences, copilot-instructions.md section) that personalize Claude's responses.
 
 Routes to the profile-user workflow which orchestrates the full flow: consent gate, session analysis or questionnaire fallback, profile generation, result display, and artifact selection.
 </objective>
 
 <execution_context>
-@~/.claude/get-shit-done/workflows/profile-user.md
-@~/.claude/get-shit-done/references/ui-brand.md
+@~/.copilot/get-shit-done/workflows/profile-user.md
+@~/.copilot/get-shit-done/references/ui-brand.md
 </execution_context>
 
 <context>
@@ -40,7 +40,7 @@ The workflow handles all logic including:
 5. Cross-project split resolution
 6. Profile writing to USER-PROFILE.md
 7. Result display with report card and highlights
-8. Artifact selection (dev-preferences, CLAUDE.md sections)
+8. Artifact selection (dev-preferences, copilot-instructions.md sections)
 9. Sequential artifact generation
 10. Summary with refresh diff (if applicable)
 </process>

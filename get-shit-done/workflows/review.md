@@ -16,13 +16,11 @@ Check which AI CLIs are available on the system:
 ```bash
 # Check each CLI
 command -v gemini >/dev/null 2>&1 && echo "gemini:available" || echo "gemini:missing"
-command -v claude >/dev/null 2>&1 && echo "claude:available" || echo "claude:missing"
 command -v codex >/dev/null 2>&1 && echo "codex:available" || echo "codex:missing"
 ```
 
 Parse flags from `$ARGUMENTS`:
 - `--gemini` → include Gemini
-- `--claude` → include Claude
 - `--codex` → include Codex
 - `--all` → include all available
 - No flags → include all available
@@ -32,21 +30,20 @@ If no CLIs are available:
 No external AI CLIs found. Install at least one:
 - gemini: https://github.com/google-gemini/gemini-cli
 - codex: https://github.com/openai/codex
-- claude: https://github.com/anthropics/claude-code
 
-Then run /gsd:review again.
+Then run /gsd-review again.
 ```
 Exit.
 
-If only one CLI is the current runtime (e.g. running inside Claude), skip it for the review
-to ensure independence. At least one DIFFERENT CLI must be available.
+Since GSD runs inside Copilot, external CLIs provide independent review.
+At least one external CLI must be available.
 </step>
 
 <step name="gather_context">
 Collect phase artifacts for the review prompt:
 
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init phase-op "${PHASE_ARG}")
+INIT=$(node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" init phase-op "${PHASE_ARG}")
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 ```
 
@@ -121,11 +118,6 @@ For each selected CLI, invoke in sequence (not parallel — avoid rate limits):
 gemini -p "$(cat /tmp/gsd-review-prompt-{phase}.md)" 2>/dev/null > /tmp/gsd-review-gemini-{phase}.md
 ```
 
-**Claude (separate session):**
-```bash
-claude -p "$(cat /tmp/gsd-review-prompt-{phase}.md)" --no-input 2>/dev/null > /tmp/gsd-review-claude-{phase}.md
-```
-
 **Codex:**
 ```bash
 codex exec --skip-git-repo-check "$(cat /tmp/gsd-review-prompt-{phase}.md)" 2>/dev/null > /tmp/gsd-review-codex-{phase}.md
@@ -150,7 +142,7 @@ Combine all review responses into `{phase_dir}/{padded_phase}-REVIEWS.md`:
 ```markdown
 ---
 phase: {N}
-reviewers: [gemini, claude, codex]
+reviewers: [gemini, codex]
 reviewed_at: {ISO timestamp}
 plans_reviewed: [{list of PLAN.md files}]
 ---
@@ -160,12 +152,6 @@ plans_reviewed: [{list of PLAN.md files}]
 ## Gemini Review
 
 {gemini review content}
-
----
-
-## Claude Review
-
-{claude review content}
 
 ---
 
@@ -191,7 +177,7 @@ plans_reviewed: [{list of PLAN.md files}]
 
 Commit:
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs: cross-AI review for phase {N}" --files {phase_dir}/{padded_phase}-REVIEWS.md
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" commit "docs: cross-AI review for phase {N}" --files {phase_dir}/{padded_phase}-REVIEWS.md
 ```
 </step>
 
@@ -211,7 +197,7 @@ Consensus concerns:
 Full review: {padded_phase}-REVIEWS.md
 
 To incorporate feedback into planning:
-  /gsd:plan-phase {N} --reviews
+  /gsd-plan-phase {N} --reviews
 ```
 
 Clean up temp files.
@@ -224,5 +210,5 @@ Clean up temp files.
 - [ ] REVIEWS.md written with structured feedback
 - [ ] Consensus summary synthesized from multiple reviewers
 - [ ] Temp files cleaned up
-- [ ] User knows how to use feedback (/gsd:plan-phase --reviews)
+- [ ] User knows how to use feedback (/gsd-plan-phase --reviews)
 </success_criteria>
