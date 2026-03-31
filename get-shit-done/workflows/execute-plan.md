@@ -6,7 +6,7 @@ Execute a phase prompt (PLAN.md) and create the outcome summary (SUMMARY.md).
 Read STATE.md before any operation to load project context.
 Read config.json for planning behavior settings.
 
-@~/.claude/get-shit-done/references/git-integration.md
+@~/.copilot/get-shit-done/references/git-integration.md
 </required_reading>
 
 <available_agent_types>
@@ -20,7 +20,7 @@ Valid GSD subagent types (use exact names — do not fall back to 'general-purpo
 Load execution context (paths only to minimize orchestrator context):
 
 ```bash
-INIT=$(node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" init execute-phase "${PHASE}")
+INIT=$(node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" init execute-phase "${PHASE}")
 if [[ "$INIT" == @file:* ]]; then INIT=$(cat "${INIT#@file:}"); fi
 ```
 
@@ -112,8 +112,6 @@ Pattern B only (verify-only checkpoints). Skip for A/C.
    - Check `git log --oneline --all --grep="{phase}-{plan}"` returns ≥1 commit
    - Append `## Self-Check: PASSED` or `## Self-Check: FAILED` to SUMMARY
 
-   **Known Claude Code bug (classifyHandoffIfNeeded):** If any segment agent reports "failed" with `classifyHandoffIfNeeded is not defined`, this is a Claude Code runtime bug — not a real failure. Run spot-checks; if they pass, treat as successful.
-
 
 
 
@@ -130,7 +128,7 @@ This IS the execution instructions. Follow exactly. If plan references CONTEXT.m
 
 <step name="previous_phase_check">
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" phases list --type summaries --raw
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" phases list --type summaries --raw
 # Extract the second-to-last summary from the JSON result
 ```
 If previous SUMMARY has unresolved "Issues Encountered" or "Next Phase Readiness" blockers: AskUserQuestion(header="Previous Issues", options: "Proceed anyway" | "Address first" | "Review previous").
@@ -140,7 +138,7 @@ If previous SUMMARY has unresolved "Issues Encountered" or "Next Phase Readiness
 Deviations are normal — handle via rules below.
 
 1. Read @context files from prompt
-2. **MCP tools:** If CLAUDE.md or project instructions reference MCP tools (e.g. jCodeMunch for code navigation), prefer them over Grep/Glob when available. Fall back to Grep/Glob if MCP tools are not accessible.
+2. **MCP tools:** If copilot-instructions.md or project instructions reference MCP tools (e.g. jCodeMunch for code navigation), prefer them over Grep/Glob when available. Fall back to Grep/Glob if MCP tools are not accessible.
 3. Per task:
    - **MANDATORY read_first gate:** If the task has a `<read_first>` field, you MUST read every listed file BEFORE making any edits. This is not optional. Do not skip files because you "already know" what's in them — read them. The read_first files establish ground truth for the task.
    - `type="auto"`: if `tdd="true"` → TDD execution. Implement with deviation rules + auth gates. Verify done criteria. Commit (see task_commit). Track hash for Summary.
@@ -231,7 +229,7 @@ For `type: tdd` plans — RED-GREEN-REFACTOR:
 
 Errors: RED doesn't fail → investigate test/existing feature. GREEN doesn't pass → debug, iterate. REFACTOR breaks → undo.
 
-See `~/.claude/get-shit-done/references/tdd.md` for structure.
+See `~/.copilot/get-shit-done/references/tdd.md` for structure.
 </tdd_plan_execution>
 
 <precommit_failure_handling>
@@ -285,7 +283,7 @@ git add src/types/user.ts
 **Sub-repos mode:** If `sub_repos` is configured (non-empty array from init context), use `commit-to-subrepo` instead of standard git commit. This routes files to their correct sub-repo based on path prefix.
 
 ```bash
-node ~/.claude/get-shit-done/bin/gsd-tools.cjs commit-to-subrepo "{type}({phase}-{plan}): {description}" --files file1 file2 ...
+node ~/.copilot/get-shit-done/bin/gsd-tools.cjs commit-to-subrepo "{type}({phase}-{plan}): {description}" --files file1 file2 ...
 ```
 
 The command groups files by sub-repo prefix and commits atomically to each. Returns JSON: `{ committed: true, repos: { "backend": { hash: "abc", files: [...] }, ... } }`.
@@ -325,7 +323,7 @@ Display: `CHECKPOINT: [Type]` box → Progress {X}/{Y} → Task name → type-sp
 
 After response: verify if specified. Pass → continue. Fail → inform, wait. WAIT for user — do NOT hallucinate completion.
 
-See ~/.claude/get-shit-done/references/checkpoints.md for details.
+See ~/.copilot/get-shit-done/references/checkpoints.md for details.
 </step>
 
 <step name="checkpoint_return_for_orchestrator">
@@ -341,10 +339,10 @@ If verification fails:
 
 **Check if node repair is enabled** (default: on):
 ```bash
-NODE_REPAIR=$(node "./.claude/get-shit-done/bin/gsd-tools.cjs" config-get workflow.node_repair 2>/dev/null || echo "true")
+NODE_REPAIR=$(node "./.github/get-shit-done/bin/gsd-tools.cjs" config-get workflow.node_repair 2>/dev/null || echo "true")
 ```
 
-If `NODE_REPAIR` is `true`: invoke `@./.claude/get-shit-done/workflows/node-repair.md` with:
+If `NODE_REPAIR` is `true`: invoke `@./.github/get-shit-done/workflows/node-repair.md` with:
 - FAILED_TASK: task number, name, done-criteria
 - ERROR: expected vs actual result
 - PLAN_CONTEXT: adjacent task names + phase goal
@@ -378,11 +376,11 @@ fi
 grep -A 50 "^user_setup:" .planning/phases/XX-name/{phase}-{plan}-PLAN.md | head -50
 ```
 
-If user_setup exists: create `{phase}-USER-SETUP.md` using template `~/.claude/get-shit-done/templates/user-setup.md`. Per service: env vars table, account setup checklist, dashboard config, local dev notes, verification commands. Status "Incomplete". Set `USER_SETUP_CREATED=true`. If empty/missing: skip.
+If user_setup exists: create `{phase}-USER-SETUP.md` using template `~/.copilot/get-shit-done/templates/user-setup.md`. Per service: env vars table, account setup checklist, dashboard config, local dev notes, verification commands. Status "Incomplete". Set `USER_SETUP_CREATED=true`. If empty/missing: skip.
 </step>
 
 <step name="create_summary">
-Create `{phase}-{plan}-SUMMARY.md` at `.planning/phases/XX-name/`. Use `~/.claude/get-shit-done/templates/summary.md`.
+Create `{phase}-{plan}-SUMMARY.md` at `.planning/phases/XX-name/`. Use `~/.copilot/get-shit-done/templates/summary.md`.
 
 **Frontmatter:** phase, plan, subsystem, tags | requires/provides/affects | tech-stack.added/patterns | key-files.created/modified | key-decisions | requirements-completed (**MUST** copy `requirements` array from PLAN.md frontmatter verbatim) | duration ($DURATION), completed ($PLAN_END_TIME date).
 
@@ -400,13 +398,13 @@ Update STATE.md using gsd-tools:
 
 ```bash
 # Advance plan counter (handles last-plan edge case)
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state advance-plan
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" state advance-plan
 
 # Recalculate progress bar from disk state
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state update-progress
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" state update-progress
 
 # Record execution metrics
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state record-metric \
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" state record-metric \
   --phase "${PHASE}" --plan "${PLAN}" --duration "${DURATION}" \
   --tasks "${TASK_COUNT}" --files "${FILE_COUNT}"
 ```
@@ -418,11 +416,11 @@ From SUMMARY: Extract decisions and add to STATE.md:
 ```bash
 # Add each decision from SUMMARY key-decisions
 # Prefer file inputs for shell-safe text (preserves `$`, `*`, etc. exactly)
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state add-decision \
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" state add-decision \
   --phase "${PHASE}" --summary-file "${DECISION_TEXT_FILE}" --rationale-file "${RATIONALE_FILE}"
 
 # Add blockers if any found
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state add-blocker --text-file "${BLOCKER_TEXT_FILE}"
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" state add-blocker --text-file "${BLOCKER_TEXT_FILE}"
 ```
 </step>
 
@@ -430,7 +428,7 @@ node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state add-blocker --text-fi
 Update session info using gsd-tools:
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" state record-session \
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" state record-session \
   --stopped-at "Completed ${PHASE}-${PLAN}-PLAN.md" \
   --resume-file "None"
 ```
@@ -444,7 +442,7 @@ If SUMMARY "Issues Encountered" ≠ "None": yolo → log and continue. Interacti
 
 <step name="update_roadmap">
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" roadmap update-plan-progress "${PHASE}"
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" roadmap update-plan-progress "${PHASE}"
 ```
 Counts PLAN vs SUMMARY files on disk. Updates progress table row with correct count and status (`In Progress` or `Complete` with date).
 </step>
@@ -453,7 +451,7 @@ Counts PLAN vs SUMMARY files on disk. Updates progress table row with correct co
 Mark completed requirements from the PLAN.md frontmatter `requirements:` field:
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" requirements mark-complete ${REQ_IDS}
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" requirements mark-complete ${REQ_IDS}
 ```
 
 Extract requirement IDs from the plan's frontmatter (e.g., `requirements: [AUTH-01, AUTH-02]`). If no requirements field, skip.
@@ -463,7 +461,7 @@ Extract requirement IDs from the plan's frontmatter (e.g., `requirements: [AUTH-
 Task code already committed per-task. Commit plan metadata:
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md .planning/STATE.md .planning/ROADMAP.md .planning/REQUIREMENTS.md
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" commit "docs({phase}-{plan}): complete [plan-name] plan" --files .planning/phases/XX-name/{phase}-{plan}-SUMMARY.md .planning/STATE.md .planning/ROADMAP.md .planning/REQUIREMENTS.md
 ```
 </step>
 
@@ -478,7 +476,7 @@ git diff --name-only ${FIRST_TASK}^..HEAD 2>/dev/null || true
 Update only structural changes: new src/ dir → STRUCTURE.md | deps → STACK.md | file pattern → CONVENTIONS.md | API client → INTEGRATIONS.md | config → STACK.md | renamed → update paths. Skip code-only/bugfix/content changes.
 
 ```bash
-node "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" commit "" --files .planning/codebase/*.md --amend
+node "$HOME/.copilot/get-shit-done/bin/gsd-tools.cjs" commit "" --files .planning/codebase/*.md --amend
 ```
 </step>
 
@@ -492,9 +490,9 @@ If `USER_SETUP_CREATED=true`: display `⚠️ USER SETUP REQUIRED` with path + e
 
 | Condition | Route | Action |
 |-----------|-------|--------|
-| summaries < plans | **A: More plans** | Find next PLAN without SUMMARY. Yolo: auto-continue. Interactive: show next plan, suggest `/gsd:execute-phase {phase}` + `/gsd:verify-work`. STOP here. |
-| summaries = plans, current < highest phase | **B: Phase done** | Show completion, suggest `/gsd:plan-phase {Z+1}` + `/gsd:verify-work {Z}` + `/gsd:discuss-phase {Z+1}` |
-| summaries = plans, current = highest phase | **C: Milestone done** | Show banner, suggest `/gsd:complete-milestone` + `/gsd:verify-work` + `/gsd:add-phase` |
+| summaries < plans | **A: More plans** | Find next PLAN without SUMMARY. Yolo: auto-continue. Interactive: show next plan, suggest `/gsd-execute-phase {phase}` + `/gsd-verify-work`. STOP here. |
+| summaries = plans, current < highest phase | **B: Phase done** | Show completion, suggest `/gsd-plan-phase {Z+1}` + `/gsd-verify-work {Z}` + `/gsd-discuss-phase {Z+1}` |
+| summaries = plans, current = highest phase | **C: Milestone done** | Show banner, suggest `/gsd-complete-milestone` + `/gsd-verify-work` + `/gsd-add-phase` |
 
 All routes: `/clear` first for fresh context.
 </step>

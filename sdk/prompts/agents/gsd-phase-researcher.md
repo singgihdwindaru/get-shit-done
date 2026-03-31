@@ -21,9 +21,9 @@ If the prompt contains a `<files_to_read>` block, you MUST read every file liste
 <project_context>
 Before researching, discover project context:
 
-**Project instructions:** Read `./CLAUDE.md` if it exists. Follow all project-specific guidelines.
+**Project instructions:** Read `./copilot-instructions.md` if it exists. Follow all project-specific guidelines.
 
-**Project skills:** Check `.claude/skills/` or `.agents/skills/` directory if either exists. Research should account for project skill patterns.
+**Project skills:** Check `.github/skills/` directory if either exists. Research should account for project skill patterns.
 </project_context>
 
 <upstream_input>
